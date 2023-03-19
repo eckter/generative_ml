@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "generative-ml"
+version = "0.1.0"
+description = ""
+authors = ["Eloi Charpentier <eloi.charpentier@epita.fr>"]
+readme = "README.md"
+packages = [{include = "generative_ml"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+torch = "^2.0.0"
+pillow = "^9.4.0"
+pandas = "^1.5.3"
+click = "^8.1.3"
+pathlib = "^1.0.1"
+torchvision = "^0.15.1"
+
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.21.3"
+jupyter = "^1.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
