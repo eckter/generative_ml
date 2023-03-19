@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Iterable, Mapping
 
+import numpy as np
 import pandas as pd
 import torch
 from PIL import Image
@@ -10,13 +11,15 @@ from torchvision import transforms
 
 
 class PokeDataset(Dataset):
-    def __init__(self, data_dir: Path, size: int = 512):
+    def __init__(self, data_dir: Path, image_size: int = 512, n_pokemon: int = -1):
         self._to_tensor = transforms.ToTensor()
         csv_path = data_dir / "pokemons.csv"
         images = data_dir / "images"
         df = pd.read_csv(csv_path)
+        if n_pokemon > 0:
+            df = df.head(n_pokemon)
         self.type_mapping = PokeDataset._make_type_mapping(df)
-        self.images = PokeDataset._load_images(images, df["file_name"], size)
+        self.images = PokeDataset._load_images(images, df["file_name"], image_size)
         self.types = self._load_types(df)
         assert len(self.images) == len(self.types)
 
@@ -35,7 +38,8 @@ class PokeDataset(Dataset):
 
     @staticmethod
     def _load_image(image_path: Path, size: int) -> torch.tensor:
-        image = Image.open(image_path).convert("RGB")
+        image = Image.open(image_path)
+        image = PokeDataset._alpha_to_color(image).convert("RGB")
         image = ImageOps.pad(image, (size, size), color="white")
         return transforms.ToTensor()(image)
 
@@ -50,4 +54,15 @@ class PokeDataset(Dataset):
 
     @staticmethod
     def _make_type_mapping(df: pd.DataFrame) -> Mapping[str, int]:
-        return {x: i for i, x in enumerate(df.type1.unique())}
+        types = set(df.type1.unique()).union(set(df.type2.unique()))
+        return {x: i for i, x in enumerate(types)}
+
+    @staticmethod
+    def _alpha_to_color(image, color=(255, 255, 255)):
+        x = np.array(image.convert("RGBA"))
+        r, g, b, a = np.rollaxis(x, axis=-1)
+        r[a == 0] = color[0]
+        g[a == 0] = color[1]
+        b[a == 0] = color[2]
+        x = np.dstack([r, g, b, a])
+        return Image.fromarray(x, 'RGBA')
