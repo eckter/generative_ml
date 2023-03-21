@@ -1,1 +1,1 @@
-from .vae import VAE
+from .vae_interface import VAEInterface

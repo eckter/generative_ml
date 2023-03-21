@@ -1,12 +1,12 @@
 import torch
 from torch.utils import data
 from generative_ml import HyperParams
-from generative_ml.models.interfaces import VAE
+from generative_ml.models.interfaces import VAEInterface
 from generative_ml.training.sample import Sample
 
 
 def train_vae(
-        model: VAE,
+        model: VAEInterface,
         training_data: data.Dataset,
         hyperparams: HyperParams
 ):
@@ -33,7 +33,7 @@ def train_vae(
             if i_step % hyperparams.sample_every_n_step == 0:
                 yield Sample(
                     inputs=images,
-                    outputs=images_hat,
+                    outputs=images_hat.detach(),
                     types=types,
                     n_step=i_step
                 )

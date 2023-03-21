@@ -1,16 +1,16 @@
 import torch
 
-from generative_ml.models.dummy_vae.decoder import DummyDecoder
-from generative_ml.models.dummy_vae.variational_encoder import DummyVE
 from generative_ml.models.interfaces import VAEInterface
+from generative_ml.models.vae.decoder import VAEDecoder
+from generative_ml.models.vae.variational_encoder import VEncoder
 
 
-class DummyVAE(VAEInterface):
+class VAE(VAEInterface):
     def __init__(self, latent_size: int, img_size: int):
-        super(DummyVAE, self).__init__()
+        super(VAEInterface, self).__init__()
 
-        self.encoder = DummyVE(latent_size)
-        self.decoder = DummyDecoder(latent_size, img_size)
+        self.encoder = VEncoder(latent_size)
+        self.decoder = VAEDecoder(latent_size, img_size)
 
     def forward(self, x):
         return self.decode(self.encode(x))
@@ -27,4 +27,4 @@ class DummyVAE(VAEInterface):
     def to(self, device):
         self.encoder.normal.loc = self.encoder.normal.loc.to(device)
         self.encoder.normal.scale = self.encoder.normal.scale.to(device)
-        return super(DummyVAE, self).to(device)
+        return super(VAE, self).to(device)

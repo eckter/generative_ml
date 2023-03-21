@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 import torch
 
 
-class VAE(ABC, torch.nn.Module):
+class VAEInterface(ABC, torch.nn.Module):
     @abstractmethod
     def forward(self, x: torch.tensor) -> torch.tensor:
         raise NotImplemented()
